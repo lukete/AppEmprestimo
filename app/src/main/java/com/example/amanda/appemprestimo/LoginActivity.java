@@ -14,7 +14,8 @@ import android.widget.Toast;
 public class LoginActivity extends Activity {
 
     // Objetos necessários
-    Amigo amigo;
+    Entidade entidade;
+    DBHelper dbHelper;
 
     // Declarando Variaveis
     EditText edtUsuario;
@@ -25,7 +26,9 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        amigo = new Amigo();
+        // OBJETO BANCO
+        dbHelper = new DBHelper(this);
+
         // Recuperando Objetos
         edtUsuario = (EditText) findViewById(R.id.edtUsuario);
         edtSenha   = (EditText) findViewById(R.id.edtSenha);
@@ -37,17 +40,67 @@ public class LoginActivity extends Activity {
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // VALIDA SE USUARIO EXISTE
-                if(!amigo.existe_amigo(edtUsuario.getText().toString())){
+                if (edtUsuario.getText().equals("") || edtSenha.getText().equals("")) {
                     // Mensagem
-                    Toast msg = Toast.makeText(getBaseContext(), "Usuário não existe", Toast.LENGTH_SHORT);
+                    Toast msg = Toast.makeText(getBaseContext(), "Todos os campos são obrigatórios", Toast.LENGTH_SHORT);
                     msg.show();
+                } else {
+                    entidade = new Entidade();
+
+                    // VALIDA SE USUARIO EXISTE
+                    if (!dbHelper.verificaExisteUsuario(edtUsuario.getText().toString(), edtSenha.getText().toString())) {
+                        // Mensagem
+                        Toast msg = Toast.makeText(getBaseContext(), "Usuário ou senha incorretos", Toast.LENGTH_SHORT);
+                        msg.show();
+                    } else {
+                        // Mensagem
+                        Toast msg = Toast.makeText(getBaseContext(), "Bem Vindo", Toast.LENGTH_SHORT);
+                        msg.show();
+
+                        // Chama ACTIVITY PRINCIPAL
+                        Intent principal = new Intent(LoginActivity.this, PrincipalActivity.class);
+                        startActivity(principal);
+                    }
                 }
-                else{
-                    // Chama ACTIVITY PRINCIPAL
-                    Intent principal = new Intent(LoginActivity.this, PrincipalActivity.class);
-                    startActivity(principal);
+            }
+        });
+
+        // AÇÕES BOTOES
+        btnCadastrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (edtUsuario.getText().equals("") || edtSenha.getText().equals("")) {
+                    // Mensagem
+                    Toast msg = Toast.makeText(getBaseContext(), "Todos os campos são obrigatórios", Toast.LENGTH_SHORT);
+                    msg.show();
+                } else {
+                    entidade = new Entidade();
+
+                    // VALIDA SE USUARIO EXISTE
+                    if (dbHelper.verificaExisteUsuario(edtUsuario.getText().toString(), edtSenha.getText().toString())) {
+                        // Mensagem
+                        Toast msg = Toast.makeText(getBaseContext(), "Usuário já existe", Toast.LENGTH_SHORT);
+                        msg.show();
+                    } else {
+
+                        // SETANDO DADOS
+                        entidade.setId_principal(0);
+                        entidade.setTipo("U");
+                        entidade.setFoto("");
+                        entidade.setNome(edtUsuario.getText().toString());
+                        entidade.setSenha(edtSenha.getText().toString());
+
+                        // GRAVANDO DADOS
+                        dbHelper.insertEntidade(entidade);
+
+                        // MENSAGEM
+                        Toast msg = Toast.makeText(getBaseContext(), "Usuário Cadastrado", Toast.LENGTH_SHORT);
+                        msg.show();
+
+                        // Chama ACTIVITY PRINCIPAL
+                        Intent principal = new Intent(LoginActivity.this, PrincipalActivity.class);
+                        startActivity(principal);
+                    }
                 }
             }
         });
