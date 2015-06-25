@@ -26,7 +26,6 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         amigo = new Amigo();
-
         // Recuperando Objetos
         edtUsuario = (EditText) findViewById(R.id.edtUsuario);
         edtSenha   = (EditText) findViewById(R.id.edtSenha);
@@ -42,7 +41,7 @@ public class LoginActivity extends Activity {
                 // VALIDA SE USUARIO EXISTE
                 if(!amigo.existe_amigo(edtUsuario.getText().toString())){
                     // Mensagem
-                    Toast msg = Toast.makeText(getBaseContext()Espero qe , "Usuário não existe", Toast.LENGTH_SHORT);
+                    Toast msg = Toast.makeText(getBaseContext(), "Usuário não existe", Toast.LENGTH_SHORT);
                     msg.show();
                 }
                 else{
